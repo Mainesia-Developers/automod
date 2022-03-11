@@ -4,3 +4,6 @@ config.js*
 
 # node stuff
 node_modules
+
+# DB things
+json.sqlite

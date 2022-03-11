@@ -1,0 +1,6 @@
+# config files
+*.env*
+config.js*
+
+# node stuff
+node_modules

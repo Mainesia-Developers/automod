@@ -2,6 +2,8 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
+const defaultDB = 'mongodb://localhost:27017/mainesia-automod';
+
 const walkForFiles = (dir, target) => {
     let results = [];
     const list = fs.readdirSync(dir);
@@ -41,13 +43,21 @@ const importPreviousConfigs = async () => {
 const setupConfig = async () => {
     console.log('Initializing bot config...');
     const answers = await inquirer.prompt(prompts);
+    if (answers.mongoDefault != 1) {
+        const mongoPath = await inquirer.prompt({
+            type: 'input',
+            name: 'mongoAddress',
+            message: 'Please enter the address of your MongoDB database.',
+        });
+        return {
+            ...mongoPath,
+            mongoDefault: false,
+        };
+    }
 
-    const { token, prefix } = answers;
+    const { token, prefix, mongoDefault, mongoAddress } = answers;
 
-    fs.writeFileSync(
-        './.env',
-        `TOKEN=${token}\nPREFIX=${prefix}`
-    );
+    fs.writeFileSync('./.env', `TOKEN=${token}\nPREFIX=${prefix}\nMONGODB=${mongoDefault ? defaultDB : mongoAddress}`);
     console.log('REMEMBER TO NEVER SHARE YOUR TOKEN WITH ANYONE!');
 };
 
@@ -93,6 +103,12 @@ let prompts = [
         name: 'prefix',
         message: 'Please enter the prefix for the bot.',
     },
+    {
+        type: 'confirm',
+        name: 'mongoDefault',
+        message: `Are you hosting your Mongo database locally? (default: ${defaultDB})`,
+        default: 1,
+    },
 ];
 
 (async () => {
@@ -104,4 +120,3 @@ let prompts = [
     }
     await runBot();
 })();
-

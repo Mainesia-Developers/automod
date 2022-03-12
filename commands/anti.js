@@ -1,10 +1,22 @@
-const db = require('quick.db');
+const { fetchGuild } = require('../db/Mongo.js');
 const { MessageEmbed } = require('discord.js');
+var camelize = function camelize(str) {
+    return str
+        .replace(/\s(.)/g, function ($1) {
+            return $1.toUpperCase();
+        })
+        .replace(/\s/g, '')
+        .replace(/^(.)/, function ($1) {
+            return $1.toLowerCase();
+        });
+};
 
 module.exports = {
     name: 'setanti',
     async run(client, message, args) {
-        const [type, state] = args;
+        let [type, state] = args;
+        type = type ? type.toLowerCase() : '';
+        state = state ? state.toLowerCase() : '';
 
         const truthy = ['yes', 'true', 'on', 'enable', 'enabled'];
         const falsy = ['no', 'false', 'off', 'disable', 'disabled'];
@@ -41,7 +53,9 @@ module.exports = {
             return message.channel.send({ embeds: [embed] });
         }
 
-        db.set(`${message.guild.id}.automod.${type}`, truthy.includes(state) ? true : false);
+        const Guild = await fetchGuild(message.guild.id);
+        Guild.config.automod[type] = truthy.includes(state) ? true : false;
+        await Guild.save();
 
         embed
             .addField(
@@ -49,6 +63,6 @@ module.exports = {
                 `Successfuly **${truthy.includes(state) ? 'enabled' : 'disabled'}** the **${type}** filter in **${message.guild.name}**.`
             )
             .setColor('GREEN');
-        message.channel.send({ embeds: [embed] });
+        return message.channel.send({ embeds: [embed] });
     },
 };

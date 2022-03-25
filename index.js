@@ -58,7 +58,7 @@ client.on('messageCreate', async (message) => {
 
     const canSendInChannel = message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES);
 
-    const excludedChannels = ['956930653251862528', '956930653251862528', '956930653251862528', '956930653251862528'];
+    const excludedChannels = ['897146846873518231', '887952258917089331', '868122392126431282', '914552216583569449'];
     const excludedPerms = [Permissions.FLAGS.MANAGE_GUILD];
 
     if (

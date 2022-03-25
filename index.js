@@ -1,4 +1,4 @@
-const { Client, Intents, Collection } = require('discord.js');
+const { Client, Intents, Collection, Permissions } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 const { readdirSync } = require('fs');
@@ -43,29 +43,65 @@ client.on('messageCreate', async (message) => {
 
     if (message.author.bot || !message.guild) return;
 
-    try {
-        if (Guild.config.automod.antilink) {
-            const discordLinks = ['discord.gg', 'discord.me', 'discord.io', 'discord.com', 'discordapp.com', 'discord.app', 'discord.gift'];
-            const messageHasDiscordURL = discordLinks.some((discordLink) => message.content.includes(discordLink));
+    const canSendInChannel = message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES);
 
-            const link = /(http|https)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
-            if (link.test(message.content) || messageHasDiscordURL) {
-                message.delete().catch(() => {});
-                return message.channel.send(`<@${message.author.id}>, ${messageHasDiscordURL ? 'Discord-based' : ''} links are not allowed in this server.`);
-            }
+    if (Guild.config.automod.antilink) {
+        const discordLinks = ['discord.gg', 'discord.me', 'discord.io', 'discord.com', 'discordapp.com', 'discord.app', 'discord.gift'];
+        const messageHasDiscordURL = discordLinks.some((discordLink) => message.content.includes(discordLink));
+        const warningMessageContent = `<@${message.author.id}>, ${messageHasDiscordURL ? 'Discord-based' : ''} links are not allowed in ${
+            canSendInChannel == 'dm' ? `**${message.guild.name}**` : 'this server'
+        }.`;
+
+        const link = /(http|https)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+        if (link.test(message.content) || messageHasDiscordURL) {
+            message.delete().catch((e) => {
+                console.log(`Couldn't delete the offending message. ${e}`);
+            });
+
+            return message[canSendInChannel ? 'channel' : 'author']
+                .send(warningMessageContent)
+                .then((msg) => {
+                    setTimeout(
+                        () =>
+                            msg.delete().catch((e) => {
+                                console.log(`I ran into an issue deleting a message: ${e}`);
+                            }),
+                        5000
+                    );
+                })
+                .catch((e) => {
+                    console.log(`Encountered an error: ${e}`);
+                });
         }
+    }
 
-        if (Guild.config.automod.antiswear) {
-            const swearwords = ['ukraine', 'russia', 'putin', 'ww3', 'u k r a i n e', 'r u s s i a', 'p u t i n', 'taiwan', 't a i w a n', 'w w 3'];
-            const swear = new RegExp(swearwords.join('|'), 'gi');
+    if (Guild.config.automod.antiswear) {
+        const swearwords = ['ukraine', 'russia', 'putin', 'ww3', 'u k r a i n e', 'r u s s i a', 'p u t i n', 'taiwan', 't a i w a n', 'w w 3'];
+        const swear = new RegExp(swearwords.join('|'), 'gi');
+        const warningMessageContent = `<@${message.author.id}>, you are not permitted to talk about politics in ${
+            canSendInChannel == 'dm' ? `**${message.guild.name}**` : 'this server'
+        }.`;
 
-            if (swear.test(message.content)) {
-                message.delete().catch(() => {});
-                return message.channel.send(`<@${message.author.id}>, you are not permitted to talk about politics in this server.`);
-            }
+        if (swear.test(message.content)) {
+            message.delete().catch((e) => {
+                console.log(`Couldn't delete the offending message. ${e}`);
+            });
+
+            return message[canSendInChannel ? 'channel' : 'author']
+                .send(warningMessageContent)
+                .then((msg) => {
+                    setTimeout(
+                        () =>
+                            msg.delete().catch((e) => {
+                                console.log(`I ran into an issue deleting a message. ${e}`);
+                            }),
+                        5000
+                    );
+                })
+                .catch((e) => {
+                    console.log(`Encountered an error. ${e}`);
+                });
         }
-    } catch (e) {
-        console.log(`Couldn't delete message ${message.id}.\nError: ${e}`);
     }
 
     if (message.content.startsWith(PREFIX)) {

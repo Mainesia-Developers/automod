@@ -43,7 +43,7 @@ client.on('messageCreate', async (message) => {
 
     if (message.author.bot || !message.guild) return;
 
-    const canSendInChannel = message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES) ? 'channel' : 'dm';
+    const canSendInChannel = message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES);
 
     if (Guild.config.automod.antilink) {
         const discordLinks = ['discord.gg', 'discord.me', 'discord.io', 'discord.com', 'discordapp.com', 'discord.app', 'discord.gift'];

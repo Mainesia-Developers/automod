@@ -43,7 +43,29 @@ client.on('messageCreate', async (message) => {
 
     if (message.author.bot || !message.guild) return;
 
+    if (message.content.startsWith(PREFIX)) {
+        const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+        const command = args.shift().toLowerCase();
+
+        if (!client.commands.has(command)) return;
+
+        try {
+            return client.commands.get(command).run(client, message, args);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const canSendInChannel = message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES);
+
+    const excludedChannels = ['956930653251862528', '956930653251862528', '956930653251862528', '956930653251862528'];
+    const excludedPerms = [Permissions.FLAGS.MANAGE_GUILD];
+
+    if (
+        excludedPerms.some((flag) => message.member.permissionsIn(message.channel).has(flag)) ||
+        excludedChannels.some((channelId) => message.channel.id == channelId)
+    )
+        return;
 
     if (Guild.config.automod.antilink) {
         const discordLinks = ['discord.gg', 'discord.me', 'discord.io', 'discord.com', 'discordapp.com', 'discord.app', 'discord.gift'];
@@ -101,19 +123,6 @@ client.on('messageCreate', async (message) => {
                 .catch((e) => {
                     console.log(`Encountered an error. ${e}`);
                 });
-        }
-    }
-
-    if (message.content.startsWith(PREFIX)) {
-        const args = message.content.slice(PREFIX.length).trim().split(/ +/);
-        const command = args.shift().toLowerCase();
-
-        if (!client.commands.has(command)) return;
-
-        try {
-            client.commands.get(command).run(client, message, args);
-        } catch (error) {
-            console.error(error);
         }
     }
 });

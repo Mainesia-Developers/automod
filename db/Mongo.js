@@ -5,7 +5,7 @@ const GuildSchema = require('./schema/Guild.js');
  * @param {string} key The ID of the guild.
  * @returns {Promise<GuildSchema>} Guild object from database.
  */
-exports.fetchGuild = async (key) => {
+exports.fetchGuild = async(key) => {
     let guildDB = await GuildSchema.findOne({ id: key });
     if (guildDB) return guildDB;
     else {
@@ -21,7 +21,7 @@ exports.fetchGuild = async (key) => {
         });
 
         await guildDB.save().catch((err) => console.log(err));
-        console.log(guildDB);
+        console.log(`Registered guild with ID ${guildDB.id} at ${Date(guildDB.registeredAt)}`);
         return guildDB;
     }
 };

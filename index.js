@@ -21,6 +21,18 @@ const connectDB = async () => {
         });
 };
 
+const express = require('express');
+const app = express();
+
+app.set('port', (process.env.PORT || 5000));
+
+app.get('/', (req, res) => {
+    let result = 'Bot is running! Check the project for logs.';
+    res.send(result);
+}).listen(app.get('port'), () => {
+    console.log(`Bot is running, and server is listening to port ${app.get('port')}`);
+})
+
 client.on('ready', () => {
     client.user.setActivity('for profanity', { type: 'WATCHING' });
     console.log('Bot is ready!');

@@ -7,3 +7,6 @@ node_modules
 
 # DB things
 json.sqlite
+
+# macOS stuff
+**/*.DS_Store

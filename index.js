@@ -110,7 +110,7 @@ client.on('messageCreate', async (message) => {
     }
 
     if (Guild.config.automod.antiswear) {
-        const swearwords = ['ukraine', 'russia', 'putin', 'ww3', 'u k r a i n e', 'r u s s i a', 'p u t i n', 'taiwan', 't a i w a n', 'w w 3']
+        const swearwords = ['ukraine', 'russia', 'putin', 'ww3', 'u k r a i n e', 'r u s s i a', 'p u t i n', 'w w 3']
         const swear = new RegExp(swearwords.join('|'), 'gi')
         const warningMessageContent = `<@${message.author.id}>, you are not permitted to talk about politics in ${
             canSendInChannel == 'dm' ? `**${message.guild.name}**` : 'this server'

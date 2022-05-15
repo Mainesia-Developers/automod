@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "npm i",
+        "build": "pnpm i",
         "setup": "node setup.js",
         "bot": "node index.js"
     },

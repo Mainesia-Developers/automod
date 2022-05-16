@@ -8,6 +8,9 @@
         "setup": "node setup.js",
         "bot": "node index.js"
     },
+    "engines": {
+        "node": "18.x"
+    },
     "keywords": [],
     "author": "",
     "license": "ISC",

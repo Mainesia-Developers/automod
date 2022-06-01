@@ -1,4 +1,4 @@
-const GuildSchema = require('./schema/Guild.js')
+const GuildSchema = require('./schema/Guild.js');
 
 /**
  * Fetch a guild from the database by its ID. If the guild does not exist, it will be created.
@@ -6,8 +6,8 @@ const GuildSchema = require('./schema/Guild.js')
  * @returns {Promise<GuildSchema>} Guild object from database.
  */
 exports.fetchGuild = async (key) => {
-    let guildDB = await GuildSchema.findOne({ id: key })
-    if (guildDB) return guildDB
+    let guildDB = await GuildSchema.findOne({ id: key });
+    if (guildDB) return guildDB;
     else {
         guildDB = new GuildSchema({
             id: key,
@@ -18,10 +18,10 @@ exports.fetchGuild = async (key) => {
                     antiswear: true,
                 },
             },
-        })
+        });
 
-        await guildDB.save().catch((err) => console.log(err))
-        console.log(`Registered guild with ID ${guildDB.id} at ${Date(guildDB.registeredAt)}`)
-        return guildDB
+        await guildDB.save().catch((err) => console.log(err));
+        console.log(`Registered guild with ID ${guildDB.id} at ${Date(guildDB.registeredAt)}`);
+        return guildDB;
     }
-}
+};

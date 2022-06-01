@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const { Model, Schema } = mongoose
+const mongoose = require('mongoose');
+const { Model, Schema } = mongoose;
 
 GuildSchema = mongoose.model(
     'Guild',
@@ -13,6 +13,6 @@ GuildSchema = mongoose.model(
             },
         },
     })
-)
+);
 
-module.exports = GuildSchema
+module.exports = GuildSchema;
